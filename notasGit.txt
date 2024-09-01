@@ -1,0 +1,47 @@
+-- Conectar repositorio
+
+git remote add origin <url> //Añade un origin (repositorio remoto) como remoto al repositorio local.
+git branch -M main //Cambia el nombre de la rama principal del repositorio local para igualarlo a la rama principal del repositorio remoto. 
+git push -u origin main //Vincula la rama principal del local con la principal del remoto para que los proximos push se realicen entre ellos.
+
+
+-- Regresar a cambios anteriores
+git reset --hard <commit> //Regresa al commit (cambio/version) indicado y borra los commits más recientes a este.
+git reset --soft <commit> //Regresa al commit (cambio/version) indicado y mantiene los commits más recientes a este.
+git checkout <commit> //Permite revisar commits, esto con el fin de inspeccionar que cambios tuvo el proyecto y su evolución.
+
+
+-- Subir al remoto cuando en el local se eliminan commits
+No permitirá la subida de los commits debido a que los commits locales antes del head deben ser los mismos del remoto ya que de no ser así se sobreescribiría el repositorio remoto, generando así perdidas de datos.
+
+git push --force origin <rama> //Subirá los cambios saltando la advertencia anterior, sobreescribiendo el repositorio remoto eliminando los commits más recientes del commit que se regresó.
+
+-Si no se quiere eliminar commits
+git pull --rebase origin <rama> //Descarga los commits del remoto y después añade al historial de commits los cambios realizados desde local, esto permite mantener los dos tipos de commits juntos en local sin sobreescribir los realizados en esté.
+
+-Si no genera conflicto-
+git push origin <rama>
+
+-Si genera conflicto-
+Primero se debe de identificar y corrigir los archivos de forma manual, git te indicará desde que parte del proyecto se está generando conflicto para corregirlos.
+
+Se creará una pseudo rama en la cuál se encontrarán los commits en conflicto, una vez corregidos es necesario realizar un commit para registrar el cambio de forma local.
+
+git rebase --continue //Se confirmará que el rebase (pseudo rama) se encuentra lista para fusionar (merge) con la rama principal para que commits remotos y locales convivan.
+git push origin <rama> //Se suben los cambios realizados en local al remoto.
+
+
+-- Trabajar en un repositorio ajeno --
+git fork //Crea una copia del repositorio ajeno a la cuenta de github.
+git clone <url> //Se clona la copia del repositorio ajeno para tenerlo local.
+git checkout -b "nombre__rama" //Se crea una copia de la rama actual y se cambia a ella, esto con el fin de trabajar sin afectar la rama principal
+git  push origin "nombre__rama" //Se sube a la copia del repositorio ajeno la copia de la rama principal junto con los nuevos creados
+Si se han realizado commits a la nueva rama se verán asi:
+A---B---C   (main)
+         \
+          D---E---F   (copia__rama)
+Así se verá también cuando se suban las dos ramas al remoto
+
+La copia de la rama obtiene todos los commits de la rama actual en donde se hizo checkout -b y en esta copia se trabajará con el proyecto, cuando se haga push al remoto se subirá toda la copia de la rama junto con los commits para posteriormente realizar una fusión entre las dos ramas y el proyecto quede completado, esto permite evitar dañar el progreso del proyecto cuando se este desarrollando.
+
+Pull request en la copia del repositorio //Se envia una petición al dueño (committer) del repositorio original para que verifique si los cambios realizados no generán conflictos, si no hay conflictos se subirá al repositorio original la copia de la rama creada.
